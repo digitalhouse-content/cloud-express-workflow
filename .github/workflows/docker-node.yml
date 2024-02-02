@@ -2,12 +2,12 @@ name: Docker Image Express
 
 on:
   push:
-    branches: [ main ]
+    branches: [ envs ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    environment: production
+    environment: development
     strategy:
       matrix:
         node-version: [ 18.x, 20.x ]
@@ -19,15 +19,16 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    environment: production
+    environment: development
     needs: [ test ]
     steps:
     - uses: actions/checkout@v4
     - name: Docker build to registry
       env:
-        REPOSITORY: express-api
+        REGISTRY: ${{ secrets.REGISTRY }}
+        REPOSITORY: ${{ vars.REPOSITORY }}
         IMAGE_TAG: ${{ github.sha }}
-      run: docker build -t $REPOSITORY:$IMAGE_TAG .
+      run: docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
 
 
 
