@@ -27,7 +27,7 @@ jobs:
       env:
         REPOSITORY: express-api
         IMAGE_TAG: ${{ github.sha }}
-      run: docker build -t $REPOSITORY:$IMAGE_TAG
+      run: docker build -t $REPOSITORY:$IMAGE_TAG .
 
 
 
