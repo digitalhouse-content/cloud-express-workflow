@@ -1,0 +1,53 @@
+name: Docker Image Express
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      matrix:
+        node-version: [ 18.x, 20.x ]
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+    - run: npm ci
+    - run: npm test
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [ test ]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Docker build to registry
+      env:
+        REPOSITORY: express-api
+        IMAGE_TAG: ${{ github.sha }}
+      run: docker build -t $REPOSITORY:$IMAGE_TAG
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
