@@ -2,7 +2,7 @@ name: Docker Image Express
 
 on:
   push:
-    branches: [ envs ]
+    branches: [ auth-with-role ]
 
 jobs:
   test:
