@@ -2,7 +2,7 @@ name: Docker Image Express
 
 on:
   push:
-    branches: [ auth-with-role ]
+    branches: [ deploy-ecs ]
 
 permissions:
   id-token: write
@@ -21,26 +21,28 @@ jobs:
     - run: npm ci
     - run: npm test
 
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     environment: development
     needs: [ test ]
     steps:
     - uses: actions/checkout@v4
-    - name: Docker build to registry
-      env:
-        REGISTRY: ${{ secrets.REGISTRY }}
-        REPOSITORY: ${{ vars.REPOSITORY }}
-        IMAGE_TAG: ${{ github.sha }}
-      run: docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         aws-region: ${{ vars.AWS_REGION }}
     - name: Login to ECR
+      id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
-
+    - name: Docker build and push to registry
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: ${{ vars.REPOSITORY }}
+        IMAGE_TAG: latest
+      run: |
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
 
 
