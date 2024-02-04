@@ -61,6 +61,7 @@ jobs:
         aws-region: ${{ vars.AWS_REGION }}
     - name: Set Docker Image
       uses: aws-actions/amazon-ecs-render-task-definition@v1
+      id: render-task-definition
       with:
         task-definition: ".aws/task.json"
         container-name: ${{ vars.CONTAINER_NAME }}
@@ -68,7 +69,7 @@ jobs:
     - name: Deploy to ECS
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition:
+        task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
         service: ${{ vars.SERVICE_ECS }}
         cluster: ${{ vars.CLUSTER_ECS }}
         wait-for-service-stability: true
