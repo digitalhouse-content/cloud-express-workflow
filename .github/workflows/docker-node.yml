@@ -4,6 +4,10 @@ on:
   push:
     branches: [ auth-with-role ]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
